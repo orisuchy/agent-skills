@@ -37,7 +37,7 @@ def herdr(*args, check=True):
     if check and p.returncode != 0:
         sys.exit(f"herdr {' '.join(args)} failed: {p.stderr.strip() or p.stdout.strip()}")
     try:
-        return p.returncode, json.loads(p.stdout or "{}")
+        return p.returncode, json.loads(p.stdout or p.stderr or "{}")  # herdr prints some errors on stderr
     except ValueError:
         return p.returncode, {}
 

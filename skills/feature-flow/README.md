@@ -100,7 +100,7 @@ orch  › (table per agent; impl-02 shows n/a: token and /cost capture are Claud
 | `codex`, `gemini`, `copilot` | `Use the implement skill on <ticket>.` | `--model`, only for a literal model id; tiers use the agent's default | `n/a` |
 | other Herdr kinds | `Use the implement skill on <ticket>.` | not passed (flag unverified): the agent's default model | `n/a` |
 
-The `--model` flag was checked in `gemini --help` and `copilot --help`, and in the [Codex CLI docs](https://developers.openai.com/codex/cli/reference). Claude-only features: `/cost` capture, `usage.py` token counts, the `/setup-matt-pocock-skills` slash trigger, and the tier defaults. The worker must have Matt Pocock's skills installed for its own agent. Only `claude` workers were run end to end.
+The `--model` flag was checked in `gemini --help` and `copilot --help`, and in the [Codex CLI docs](https://developers.openai.com/codex/cli/reference). Claude-only features: `/cost` capture, `usage.py` token counts, the `/setup-matt-pocock-skills` slash trigger, and the tier defaults. The worker must have Matt Pocock's skills installed for its own agent. Only `claude` workers were run end to end. A fresh folder makes Gemini CLI and Copilot CLI show a folder-trust dialog; `ff.py start` then reports `agent_not_ready` (the pane is kept). Answer the dialog yourself once, or trust the folder before dispatching.
 
 ## Configuration
 

@@ -24,13 +24,15 @@ The planner tier is you (on Claude Code, start the session on `opus`). A model v
 
 ## Supported agents
 
-Pass `--kind <AGENT_KIND>` (or a per-ticket kind the user picked) to every `$FF start`; without it the worker is `claude`. This table is the one place that says how to prompt a skill. Prompts below name the skill and show the Claude Code form (`/implement <path>`); for another kind use its row.
+Pass `--kind <AGENT_KIND>` (or a per-ticket kind the user picked) to every `$FF start`; without it the worker is `claude`. This table is the one place that says how to prompt a skill. Prompts below name the skill and show the Claude Code form (`/implement <path>`); for another kind use its row. The full table (cost and usage support, caveats) is in the README.
 
-| Kind | Prompt a skill | Model flag | `/cost` + usage.py |
-|---|---|---|---|
-| `claude` | `/implement <path>` | `--model` | yes |
-| `codex`, `gemini`, `copilot` | `Use the implement skill on <path>.` | `--model` | no: `n/a` |
-| any other Herdr kind | `Use the implement skill on <path>.` | not passed (unverified) | no: `n/a` |
+| Kind | Prompt a skill | Model flag |
+|---|---|---|
+| `claude` | `/implement <path>` | `--model` |
+| `codex`, `gemini`, `copilot` | `Use the implement skill on <path>.` | `--model` |
+| any other Herdr kind | `Use the implement skill on <path>.` | not passed (unverified) |
+
+Only `claude` records `/cost` and token usage; every other kind records `n/a`.
 
 The worker agent must load Agent Skills and have the required skills installed for it.
 
