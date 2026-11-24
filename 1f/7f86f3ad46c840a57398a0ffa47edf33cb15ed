@@ -1,0 +1,19 @@
+skills/story-point-estimator/scripts/manage_baseline.py
+  s_7eb0eea64d2f93::t_3a89d08877a749 98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1f7f86f3ad46c840a57398a0ffa47edf33cb15ed",
+  "prompts": {},
+  "sessions": {
+    "s_7eb0eea64d2f93": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cde4cb90-137c-4000-9e5d-e1791eebd88c",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
