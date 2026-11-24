@@ -16,11 +16,10 @@ Precondition: `test "${HERDR_ENV:-}" = 1`. If it fails, say you are not inside H
 |---|---|
 | `SKILL_DIR` | absolute path of the folder holding this `SKILL.md` |
 | `FF` | `python3 $SKILL_DIR/scripts/ff.py` (shell variables do not persist: set both in each command that uses them) |
-| Planner model (you) | `opus` |
-| Implementer model (default) | `sonnet` |
-| Mechanical model | `haiku` |
+| `IMPLEMENTER` model: judgment tickets, on-demand agents | `sonnet` |
+| `MECHANICAL` model: explicit, test-checkable tickets | `haiku` |
 
-`ff.py` maps `opus`/`sonnet`/`haiku` to `claude-{opus,sonnet,haiku}-5-5` and passes any other value through as a full model id. Workers start as Claude Code agents.
+The planner tier is you (start the session on `opus`). Workers are Claude Code agents; aliases resolve via `MODELS` in `scripts/ff.py`, other values pass through as full model ids.
 
 ## Phase 0 — Bootstrap (only if needed)
 
@@ -33,7 +32,7 @@ The flow needs `/setup-matt-pocock-skills` to have run (tracker = local markdown
 | No `.git` (new project) | Ask the user which they want, then run the setup: **(a) `git init` locally, no remote** (recommended: `/implement` commits and worktrees need git; nothing is pushed anywhere), or **(b) no git at all** (see "No-git mode"). Never add a remote. |
 
 To run the setup, ask first: "Run the setup here with local markdown, default triage labels, and CLAUDE.md?" Only on a yes:
-1. Start the agent with `$FF start _setup setup setup - sonnet` and prompt it with `/setup-matt-pocock-skills` (it cannot be model-invoked, so send it as the prompt).
+1. Start the agent with `$FF start _setup setup setup - <IMPLEMENTER>` and prompt it with `/setup-matt-pocock-skills` (it cannot be model-invoked, so send it as the prompt).
 2. Answer its questions with exactly what the user approved: tracker = Local markdown, default triage labels, CLAUDE.md. Answer menus with `herdr agent send-keys setup <keys>`; zoom the pane (`herdr pane zoom <pane> --on`, `--off` after) to read them, since small panes hide the options. Clear any unsent text in the input box first (`herdr agent send-keys setup ctrl+u`).
 3. Verify on disk that `docs/agents/issue-tracker.md` says "Local Markdown", then `$FF close _setup setup`.
 4. If the user declines the setup, stop.
@@ -52,13 +51,12 @@ When the user chose no git, there is nothing to commit and nothing to isolate:
 ## Phase 1 — Plan (this session, interactive)
 
 Keep these in one unbroken context; do not compact or clear it until tickets are written.
-
 1. `/grill-with-docs` with the user to sharpen the idea (in a new project it builds `CONTEXT.md` from scratch). If a question needs runnable code, use the prototype detour below.
 2. If the effort is multi-session: `/to-spec`, then `/to-tickets`. Otherwise skip to Phase 2 with a single ticket.
 3. After `/to-tickets`, add a model line to every ticket file, under `**Status:**`:
 
    ```
-   **Model:** sonnet
+   **Model:** <IMPLEMENTER or MECHANICAL value, e.g. sonnet>
    ```
 
    - Mechanical: explicit, test-checkable criteria (add a field, wire an endpoint, follow an existing pattern, rename or move).
@@ -84,18 +82,7 @@ Every agent you start or close goes through `$FF`, never raw `herdr agent start`
 
 ## Layout
 
-```
-┌──────────────────────┬──────────────────────┐
-│                      │ impl-01              │
-│   orchestrator       ├──────────────────────┤
-│   (left half,        │ impl-02 / diag /     │
-│    never split)      │ research / proto     │
-│                      ├──────────────────────┤
-│                      │ review               │
-└──────────────────────┴──────────────────────┘
-```
-
-`$FF start` produces this layout: the first worker splits right of the orchestrator, later ones split down from the last worker, and from the 4th on each worker gets its own tab. All with `--no-focus`.
+`$FF start` keeps you in the left half, never split: the first worker splits right of you, later ones split down from the last worker, and from the 4th on each worker gets its own tab. All with `--no-focus`.
 - Start `review` last so it lands in the bottom slot (or its own tab); the user answers in it.
 - `$FF close` each agent as soon as it finishes.
 - If the user asks for a different arrangement, split panes by hand and start agents with raw `herdr agent start`, but then write the ledger row yourself (`name<TAB>role<TAB>ticket<TAB>model<TAB>session_id` into `usage.tsv`, session id from `herdr agent get <name>` → `.result.agent.agent_session.value`, read before the pane closes).
@@ -145,9 +132,9 @@ Default is serial with `--wait`. Only when the user asks to run several tickets 
 
 Read blocked/failed state from `herdr agent get`, not from the pane layout. IDs come from JSON responses only.
 
-## Other agents (on demand, implementer model)
+## Other agents (on demand)
 
-Start each with `$FF start <feature> <name> <role> - sonnet`, prompt with `--wait`, `$FF close` when done.
+Start each with `$FF start <feature> <name> <role> - <IMPLEMENTER>`, prompt with `--wait`, `$FF close` when done.
 
 | Agent | When | Prompt |
 |---|---|---|

@@ -92,15 +92,15 @@ The **Configuration** table at the top of [`SKILL.md`](SKILL.md):
 
 - `SKILL_DIR`: default the folder holding `SKILL.md`, resolved by the agent. Set it explicitly there if your agent cannot resolve it.
 - `FF`: default `python3 $SKILL_DIR/scripts/ff.py`.
-- Model tiers. Each ticket's `**Model:**` line names one; on-demand agents use the implementer tier.
+- Model tiers. Each ticket's `**Model:**` line names a model; on-demand agents and escalations use `IMPLEMENTER`.
 
-  | Tier | Used for | Claude default | Map to another family |
-  |---|---|---|---|
-  | planner | the orchestrator: grilling, spec, tickets, dispatch decisions | `opus` | your strongest reasoning model |
-  | implementer | tickets needing judgment, all on-demand agents, escalations | `sonnet` | a strong coding model |
-  | mechanical | tickets with explicit, test-checkable criteria | `haiku` | your fastest cheap model |
+  | Tier | Setting | Used for | Claude default | Pick instead |
+  |---|---|---|---|---|
+  | planner | none: the model you start the session on | the orchestrator: grilling, spec, tickets, dispatch decisions | `opus` | your strongest reasoning model |
+  | implementer | `IMPLEMENTER` | tickets needing judgment, all on-demand agents, escalations | `sonnet` | a strong coding model |
+  | mechanical | `MECHANICAL` | tickets with explicit, test-checkable criteria | `haiku` | your fastest cheap model |
 
-  `ff.py` maps `opus`/`sonnet`/`haiku` to `claude-opus-5-5`/`claude-sonnet-5-5`/`claude-haiku-5-5` (edit `MODELS` in `scripts/ff.py` when new versions ship). Any other value in a model line is passed through as a full model id to `--model`.
+  The aliases resolve via `MODELS` in `scripts/ff.py` (edit it when new versions ship); any other value is passed through to the worker's `--model` flag. Workers always start as Claude Code (`--kind claude` in `ff.py`), so worker model lines must be Claude model ids. Using another agent family means changing `--kind` in `ff.py` to another kind Herdr supports; that is untested, and `/cost` capture and `usage.py` only understand Claude Code.
 
 Environment: `HERDR_BIN` points `ff.py` at a different `herdr` binary (the self-check uses it). Run state lives in `.scratch/<feature>/` of the project: `usage.tsv`, `cost.tsv`, `panes.tsv`.
 
