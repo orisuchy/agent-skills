@@ -1,0 +1,22 @@
+tools/leak-scan.sh
+  s_3ad3fd1db97d76::t_ad1e4160c39ab4 7
+  s_3ad3fd1db97d76::t_b475af673180a1 1-6,8-11
+.gitignore
+  s_3ad3fd1db97d76::t_0bbe81526601fa 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9eb98ebc043993f17a924d1093053596f2c9a572",
+  "prompts": {},
+  "sessions": {
+    "s_3ad3fd1db97d76": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e99799b3-63b5-4ff7-9beb-3eb779a107c4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
