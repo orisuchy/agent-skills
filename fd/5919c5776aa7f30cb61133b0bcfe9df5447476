@@ -1,0 +1,22 @@
+skills/ticket-analyzer/README.md
+  s_07967ca412092f::t_29977c3be065cd 1-46
+skills/ticket-analyzer/SKILL.md
+  s_07967ca412092f::t_ccf5ff6bc06493 1-54,56-156
+  s_07967ca412092f::t_453a06a8259474 55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fd5919c5776aa7f30cb61133b0bcfe9df5447476",
+  "prompts": {},
+  "sessions": {
+    "s_07967ca412092f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62da40ed-bf8a-4230-915d-efa75fc2f18d",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
