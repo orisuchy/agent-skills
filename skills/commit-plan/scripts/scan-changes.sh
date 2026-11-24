@@ -6,6 +6,11 @@ set -euo pipefail
 ROOT="${1:-.}"
 DEPTH="${2:-5}"
 
+if [ ! -d "$ROOT" ]; then
+    echo "scan-changes.sh: root folder does not exist: $ROOT" >&2
+    exit 1
+fi
+
 while IFS= read -r gitdir; do
     repo="${gitdir%/.git}"
     changes="$(git -C "$repo" status --porcelain 2>/dev/null || true)"

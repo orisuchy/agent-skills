@@ -18,24 +18,19 @@ commit yourself.
 
 - **git**: [git-scm.com/doc](https://git-scm.com/doc). The bundled script runs `git status`, and the
   skill uses `git diff` and `git log`.
-- **bash**: the bundled `scripts/scan-changes.sh` is a bash script. Any recent bash or zsh works.
-- **An AI coding agent that can read `SKILL.md` and run shell commands.** Tested on
-  [Claude Code](https://code.claude.com/docs/en/overview). Other agents work too, as long as they can
-  run the script. A multiple-choice question tool is optional. Without one, the agent asks in plain
-  text.
+- **bash**: the bundled `scripts/scan-changes.sh` is a bash script.
+- **An AI coding agent that can read `SKILL.md` and run shell commands.** Tested on macOS with
+  [Claude Code](https://code.claude.com/docs/en/overview). Other agents should work as long as they
+  can run the script. A multiple-choice question tool is optional; without one, the agent asks in
+  plain text.
 
 No MCP servers, accounts, or other skills are needed.
 
 ## Configuration
 
-Settings live in the table at the top of `SKILL.md`, under **Configuration**:
-
-| Setting | Default | How to change it |
-|---|---|---|
-| `ROOT_DIR` | `.` (current directory) | Tell the agent which folder to scan, or edit the default in `SKILL.md`. |
-| `SCAN_DEPTH` | `5` | Same as above. Lower it if the scan is slow in a large folder tree. |
-| `LOCAL_FILE_PATTERNS` | `*-local.*`, `*.local.*` | Add the filename patterns your personal config uses. |
-| `COMMIT_STYLE` | `<TICKET-KEY> <imperative summary>` | Replace with your team's commit message format. |
+The settings (`ROOT_DIR`, `SCAN_DEPTH`, `LOCAL_FILE_PATTERNS`, `COMMIT_STYLE`) and their defaults are
+in the **Configuration** table at the top of [`SKILL.md`](SKILL.md). Change a value by telling the
+agent in the prompt, or by editing that table in your copy of the skill.
 
 ## Install
 

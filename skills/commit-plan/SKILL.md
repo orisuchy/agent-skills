@@ -5,9 +5,6 @@ description: Scans a folder of git repos (or a single repo) for uncommitted chan
 
 # commit-plan
 
-Turns the uncommitted state of one or more git repos into a reviewable commit plan (a table),
-without running `git add` or `git commit`. The user commits themselves after reviewing the plan.
-
 ## Configuration
 
 | Setting | Default | Meaning |
@@ -20,6 +17,9 @@ without running `git add` or `git commit`. The user commits themselves after rev
 Change a value by telling the agent in the prompt (e.g. "scan `~/work/clients`, depth 2") or by
 editing this table in your copy of `SKILL.md`.
 
+Turns the uncommitted state of one or more git repos into a reviewable commit plan (a table),
+without running `git add` or `git commit`. The user commits themselves after reviewing the plan.
+
 ## Inputs
 
 Ask only if missing:
@@ -30,18 +30,15 @@ Ask only if missing:
 
 ### Step 1 — Discover changed repos
 
-Run the bundled script (in this skill's `scripts/` folder) with the configured values:
+Run the bundled script from this skill's `scripts/` folder, with the configured values:
 
 ```bash
-bash scripts/scan-changes.sh "$ROOT_DIR" "$SCAN_DEPTH"
+bash <skill-dir>/scripts/scan-changes.sh "$ROOT_DIR" "$SCAN_DEPTH"
 ```
 
 It finds every `.git` directory up to `SCAN_DEPTH` and prints `git status --porcelain` for each
-repo that has changes. Repos with nothing changed are silently skipped.
-
-If a direct `find` or `git` call made through the shell tool returns garbled output, a command
-wrapper or hook may be rewriting it. Use that wrapper's raw/proxy mode for the direct call if it
-has one. Calls made inside the script are unaffected.
+repo that has changes. Repos with nothing changed are silently skipped. If `ROOT_DIR` does not
+exist, the script exits with an error; report it and ask for the right folder.
 
 ### Step 2 — Triage every changed file
 
@@ -73,11 +70,10 @@ Filenames aren't enough. For every file staying in scope:
 git -C <repo> diff -- <file>
 ```
 
-Understand *what* changed, not just *that* it changed. You need this to write an accurate
-one-line explanation per file. Watch for incidental noise bundled inside an otherwise-relevant
-file's diff (e.g. wildcard imports expanded to explicit ones by an IDE save). Keep the file in
-the commit, but call the incidental part out in the explanation rather than describing it as
-part of the feature.
+Understand *what* changed, not just *that* it changed. Watch for incidental noise bundled inside
+an otherwise-relevant file's diff (e.g. wildcard imports expanded to explicit ones by an IDE save).
+Keep the file in the commit, but call the incidental part out in its explanation rather than
+describing it as part of the feature.
 
 ### Step 4 — Group into commits
 
@@ -95,14 +91,12 @@ Columns: `#` | `commit message` | `files` | `what changed`. One row per file. Le
 `commit message` blank on continuation rows of a multi-file commit so it reads as one group.
 
 After the table, list what was excluded and why (one line each). Mention any related work already
-committed in another repo (from the Step 2 `git log` check). The user should know that context
-even though it is not part of this plan.
+committed in another repo (from the Step 2 `git log` check).
 
 ## Important notes
 
-- **Never run `git add` or `git commit`.** This skill only plans; it doesn't execute. If the user
-  wants it committed, that is a separate, explicit request.
-- **Keep clarifying questions short and few.** Batch them into one question covering all ambiguous
-  files, not a round-trip per file.
+- **Never run `git add` or `git commit`.** This skill only plans. If the user wants it committed,
+  that is a separate, explicit request.
+- **Keep clarifying questions short and few.** One batched question covers all ambiguous files.
 - **One plan per invocation.** If the user adjusts scope after seeing the table (e.g. "also exclude
-  file X"), just re-render the table. Don't re-run the whole scan.
+  file X"), re-render the table. Don't re-run the whole scan.
