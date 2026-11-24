@@ -1,0 +1,21 @@
+LICENSE
+  s_b7e6c2a92629f4::t_eaabcf9234294f 1-21
+README.md
+  s_b7e6c2a92629f4::t_63d7a92caf9a32 1-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c56931f408fbd907dc9eea4a01102cd7bc3e394c",
+  "prompts": {},
+  "sessions": {
+    "s_b7e6c2a92629f4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "00f6e374-c071-4983-ba92-c24f8a5f1337",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
