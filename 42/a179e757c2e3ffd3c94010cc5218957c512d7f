@@ -1,0 +1,25 @@
+skills/refresh-worktree-board/scripts/selfcheck.sh
+  s_4f281242f0e744::t_3cf168fc20d5a6 1-13
+skills/refresh-worktree-board/scripts/worktree-scan.py
+  s_4f281242f0e744::t_3cf168fc20d5a6 1-154
+skills/refresh-worktree-board/README.md
+  s_4f281242f0e744::t_41ffbcd2635e0a 1-31
+skills/refresh-worktree-board/SKILL.md
+  s_4f281242f0e744::t_d3fe62aac13016 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "42a179e757c2e3ffd3c94010cc5218957c512d7f",
+  "prompts": {},
+  "sessions": {
+    "s_4f281242f0e744": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe10a924-8b1e-4787-aaa4-e627a2433bcf",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
