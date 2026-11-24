@@ -1,0 +1,23 @@
+skills/feature-flow/scripts/ff.py
+  s_4c6d453772653f::t_f567bdf0500028 40
+skills/feature-flow/SKILL.md
+  s_4c6d453772653f::t_f567bdf0500028 27,29-35
+skills/feature-flow/README.md
+  s_4c6d453772653f::t_c74c3f3e32334e 103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7b8bf3c6fdd13472858c0d8e3d0b9a4e5eb5a842",
+  "prompts": {},
+  "sessions": {
+    "s_4c6d453772653f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "27a8ba52-7ff3-42ef-be43-5e1dd7264c30",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "Ori Suchy <orisuchy@gmail.com>"
+    }
+  }
+}
