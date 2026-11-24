@@ -18,7 +18,7 @@ Terms differ by CI system; use the repo's own words in its guide:
 1. **How a test reaches CI**: pipeline inputs (env, component, suite, run type, test-case id), how env picks jobs,
    how `pytest -m` selects, which inputs bypass lanes.
 2. **Choosing the lane**: product area → lane marker (via the markers catalog), the catch-all lane and who excludes
-   it, the "also on prod" marker, what the lane fixes (stage, concurrency group, `-n`, reruns, timeout, retry).
+   it, a marker that also runs the test against production (if the repo has one), what the lane fixes (stage, concurrency group, `-n`, reruns, timeout, retry).
    No fitting lane → stop and ask.
 3. **Parallel and shared-state safety**: what `-n N` means on one tenant; this repo's locks (how they are keyed,
    first match only?, per working directory = per job only); `xdist_group` works only with `--dist loadgroup`;
@@ -43,4 +43,4 @@ Terms differ by CI system; use the repo's own words in its guide:
 - Write facts about this repo's YAML, not the reference's. Then have a second agent check every claim against the YAML;
   in the reference build it found two false ones (a run type that selects nothing; a bypass that still runs a healthcheck).
 - Cite jobs by name, never by YAML line number.
-- Check every lane for `-n` without `loadgroup` next to `xdist_group` markers: a real gap found in practice (prod lanes).
+- Check every lane for `-n` without `loadgroup` next to `xdist_group` markers: a real gap found in practice.
