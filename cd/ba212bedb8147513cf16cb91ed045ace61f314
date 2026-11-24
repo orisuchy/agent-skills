@@ -1,0 +1,19 @@
+skills/make-repo-ai-ready/README.md
+  s_3c84262a76265c::t_5bed82d45ca5de 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cdba212bedb8147513cf16cb91ed045ace61f314",
+  "prompts": {},
+  "sessions": {
+    "s_3c84262a76265c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3cc94a3b-dda0-4f2a-b75a-21397252ecd0",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
