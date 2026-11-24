@@ -1,0 +1,21 @@
+skills/ticket-planning-prep/README.md
+  s_7e3376248bd0a2::t_a4557c4eab4cbf 1-46
+skills/ticket-planning-prep/SKILL.md
+  s_7e3376248bd0a2::t_a4557c4eab4cbf 1-149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4c9c59d3cb7d8ec27507a10bbbc159d955f729e6",
+  "prompts": {},
+  "sessions": {
+    "s_7e3376248bd0a2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fcc6ea58-42e0-484a-abdc-037a36fe9557",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
