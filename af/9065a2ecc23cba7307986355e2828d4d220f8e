@@ -1,0 +1,38 @@
+skills/review-comments/SKILL.md
+  s_a554beb8f61563::t_87229f6464393e 31-34
+  s_a554beb8f61563::t_85765de47bbd0d 1-30,35-155
+skills/review-comments/README.md
+  s_a554beb8f61563::t_87229f6464393e 1-42
+skills/review-comments/references/reply_tone.md
+  s_a554beb8f61563::t_85765de47bbd0d 1-63
+skills/review-comments/scripts/fetch_threads_github.sh
+  s_a554beb8f61563::t_6e683285fc0c5a 1-44
+skills/review-comments/scripts/fetch_threads_gitlab.sh
+  s_a554beb8f61563::t_125ddab4ce929e 1-86
+skills/review-comments/scripts/update_status.sh
+  s_3ad3fd1db97d76::t_f55d7b477bb7e8 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "af9065a2ecc23cba7307986355e2828d4d220f8e",
+  "prompts": {},
+  "sessions": {
+    "s_3ad3fd1db97d76": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e99799b3-63b5-4ff7-9beb-3eb779a107c4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    },
+    "s_a554beb8f61563": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "939a28cb-bafe-4f5e-bc76-140abd53a6bc",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
