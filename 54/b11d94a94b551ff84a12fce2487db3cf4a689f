@@ -1,0 +1,30 @@
+skills/feature-flow/scripts/test_ff.py
+  s_7e8d3560212792::t_0f13f86637bd61 74
+  s_7e8d3560212792::t_928bd4a11f9937 48-50,69-73,75-91
+skills/feature-flow/SKILL.md
+  s_7e8d3560212792::t_2a26e1c7374a40 3,9,19-21,23-31,33-35,48,72,81,86-87,89,94,101,110-111,150,163
+  s_7e8d3560212792::t_93b973f81a1b70 32
+skills/feature-flow/README.md
+  s_7e8d3560212792::t_93b973f81a1b70 3,12-13,18,35,69-71,73-74,78-79,85,93-104,111-112,114,120,122,135
+skills/feature-flow/scripts/ff.py
+  s_7e8d3560212792::t_0f13f86637bd61 4-8,10-11,16,24-30,68-79,93,95,111,116,120-121,145,153-158,162
+skills/feature-flow/scripts/usage.py
+  s_7e8d3560212792::t_3050354ee1c8a5 2-4,42-44
+  s_7e8d3560212792::t_6c9a02c2ead6e1 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "54b11d94a94b551ff84a12fce2487db3cf4a689f",
+  "prompts": {},
+  "sessions": {
+    "s_7e8d3560212792": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "93e0aa67-63a6-4d40-98ce-f76e82a1c2e2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ori Suchy <orisuchy@gmail.com>"
+    }
+  }
+}
