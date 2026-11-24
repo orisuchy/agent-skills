@@ -13,7 +13,7 @@ Makes a test-automation repo AI ready, so an agent that is handed a test plan wr
 ## Prerequisites
 
 - A test repo that already has `AGENTS.md`, a `CLAUDE.md` (or equivalent) pointing to it, an agent-workflow doc, an offline gate command (a fast check that runs without live services) and a PR/MR template. The skill stops and tells you if any is missing.
-- Python with pytest for the bundled `templates/test_skill_overlap.py` (standard library `unittest` only).
+- Python 3 for the bundled `templates/test_skill_overlap.py` (standard library `unittest` only; it runs under pytest too).
 - Optional: the [`feature-flow`](../feature-flow/) skill for long builds; without it the phases run serially.
 - Optional: a test-management tool (Testmo, TestRail, Xray) with an MCP server or API token, if plans live there.
 - Optional: a second, already AI-ready repo to use as `REFERENCE_REPO`.
