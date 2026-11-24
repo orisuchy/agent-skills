@@ -23,8 +23,8 @@ Build a feature with a team of agents inside [Herdr](https://herdr.dev). You pla
 
 ```mermaid
 flowchart LR
-  B[0. Bootstrap<br/>tracker setup if missing] --> P[1. Plan<br/>grill → spec → tickets<br/>+ model per ticket]
-  P -->|you approve| D[2. Dispatch<br/>frontier loop]
+  B[Phase 0: Bootstrap<br/>tracker setup if missing] --> P[Phase 1: Plan<br/>grill → spec → tickets<br/>+ model per ticket]
+  P -->|you approve| D[Phase 2: Dispatch<br/>frontier loop]
   D -->|ticket done| D
   D -->|stuck / failed| X[escalate model<br/>or diag agent]
   X --> D
