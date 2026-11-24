@@ -45,8 +45,9 @@ with tempfile.TemporaryDirectory() as tmp:
     assert splits[3].startswith("tab create"), splits          # 4th worker gets its own tab
     assert any("--model claude-haiku-5-5" in c for c in calls())
     ledger = st("usage.tsv").splitlines()
-    assert ledger[0] == "orchestrator\torch\t-\topus\tsid-me", ledger
-    assert ledger[1] == "impl-01\timpl\t01-x\thaiku\tsid-impl-01", ledger
+    assert ledger[0] == "orchestrator\torch\t-\tplanner\tsid-me\tclaude", ledger
+    assert ledger[1] == "impl-01\timpl\t01-x\thaiku\tsid-impl-01\tclaude", ledger  # old CLI = claude
+    assert all("--kind claude" in c for c in calls() if c.startswith("agent start"))
     assert len(ledger) == 5
 
     out = run("close", "feat", "impl-04")
@@ -65,4 +66,27 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "bad" in st("panes.tsv")
 
     run("close", "feat", "user-pane", ok=False)                 # never closes what it did not open
+
+    # Agent kinds and model tiers
+    starts = lambda: [c for c in calls() if c.startswith("agent start")]
+    run("close", "feat", "impl-01"); run("close", "feat", "impl-03")   # free the column
+    run("start", "feat", "m1", "impl", "06-z", "mechanical")
+    assert "--kind claude" in starts()[-1] and starts()[-1].endswith("-- --model claude-haiku-5-5"), starts()[-1]
+    run("start", "feat", "c1", "impl", "07-z", "implementer", "--kind", "codex")
+    assert "--kind codex" in starts()[-1] and "--model" not in starts()[-1], starts()[-1]   # no codex default
+    run("start", "feat", "c2", "impl", "08-z", "gpt-x", "--kind", "codex")
+    assert starts()[-1].endswith("-- --model gpt-x"), starts()[-1]                    # literal id passes
+    run("start", "feat", "a1", "impl", "09-z", "some-model", "--kind", "amp")
+    assert "--kind amp" in starts()[-1] and "--model" not in starts()[-1], starts()[-1]  # flag unverified
+    assert st("usage.tsv").splitlines()[-1].endswith("\tamp"), st("usage.tsv")
+    n = len(calls())
+    out = run("close", "feat", "c1")
+    assert "cost=n/a" in out and not any("/cost" in c for c in calls()[n:]), (out, calls()[n:])
+
+    # usage.py: non-claude rows are n/a, never looked up
+    u = subprocess.run([sys.executable, os.path.join(os.path.dirname(FF), "usage.py"), ".scratch/feat/usage.tsv"],
+                       capture_output=True, text=True)
+    assert u.returncode == 0, u.stderr
+    row = next(l for l in u.stdout.splitlines() if l.startswith("| c2 |"))
+    assert "n/a (codex)" in row and "transcript not found" not in row, row
     print("ok")

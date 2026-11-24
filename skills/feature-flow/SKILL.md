@@ -1,12 +1,12 @@
 ---
 name: feature-flow
-description: Orchestrate feature development across Herdr panes with named worker agents. Runs Matt Pocock's planning flow (grill → spec → tickets in this session), then dispatches one fresh agent per ticket running /implement, with a per-ticket model line. Also dispatches diagnosis, research, prototype and review-comment agents. Use when the user says "feature-flow", wants to build a feature with multiple agents, or asks to dispatch tickets to workers. Requires HERDR_ENV=1.
+description: Orchestrate feature development across Herdr panes with named worker agents. Runs Matt Pocock's planning flow (grill → spec → tickets in this session), then dispatches one fresh agent per ticket running the implement skill, with a per-ticket model line. Workers can be any agent kind Herdr can start (Claude Code by default). Also dispatches diagnosis, research, prototype and review-comment agents. Use when the user says "feature-flow", wants to build a feature with multiple agents, or asks to dispatch tickets to workers. Requires HERDR_ENV=1.
 disable-model-invocation: true
 ---
 
 # feature-flow
 
-You are the **orchestrator** (planner model). You plan with the user, then dispatch workers through the `herdr` CLI. You do not write feature code yourself.
+You are the **orchestrator** (planner model). You plan with the user, then dispatch workers through the `herdr` CLI. You do not write feature code yourself. Any agent that runs shell commands can orchestrate.
 
 Precondition: `test "${HERDR_ENV:-}" = 1`. If it fails, say you are not inside Herdr and stop. Follow the `herdr` skill for CLI syntax and safety rules; run `herdr agent --help` if unsure of a flag.
 
@@ -16,10 +16,23 @@ Precondition: `test "${HERDR_ENV:-}" = 1`. If it fails, say you are not inside H
 |---|---|
 | `SKILL_DIR` | absolute path of the folder holding this `SKILL.md` |
 | `FF` | `python3 $SKILL_DIR/scripts/ff.py` (shell variables do not persist: set both in each command that uses them) |
-| `IMPLEMENTER` model: judgment tickets, on-demand agents | `sonnet` |
-| `MECHANICAL` model: explicit, test-checkable tickets | `haiku` |
+| `AGENT_KIND`: worker agent kind (any `herdr agent start --kind` value) | `claude` |
+| `IMPLEMENTER` model: judgment tickets, on-demand agents | `implementer` |
+| `MECHANICAL` model: explicit, test-checkable tickets | `mechanical` |
 
-The planner tier is you (start the session on `opus`). Workers are Claude Code agents; aliases resolve via `MODELS` in `scripts/ff.py`, other values pass through as full model ids.
+The planner tier is you (on Claude Code, start the session on `opus`). A model value is a tier (`planner`, `implementer`, `mechanical`) or a literal model id. `ff.py` maps tiers per kind via `TIERS` (only `claude` has defaults: opus/sonnet/haiku; other kinds use their own default model). Literal ids pass through as `--model`, only for kinds whose CLI has that flag (see "Supported agents").
+
+## Supported agents
+
+Pass `--kind <AGENT_KIND>` (or a per-ticket kind the user picked) to every `$FF start`; without it the worker is `claude`. This table is the one place that says how to prompt a skill. Prompts in this file are written in Claude form (`/implement <path>`); for another kind rewrite them per its row.
+
+| Kind | Prompt a skill | Model flag | `/cost` + usage.py |
+|---|---|---|---|
+| `claude` | `/implement <path>` | `--model` | yes |
+| `codex`, `gemini`, `copilot` | `Use the implement skill on <path>.` | `--model` | no: `n/a` |
+| any other Herdr kind | `Use the implement skill on <path>.` | not passed (unverified) | no: `n/a` |
+
+The worker agent must load Agent Skills and have the required skills installed for it.
 
 ## Phase 0 — Bootstrap (only if needed)
 
@@ -32,7 +45,7 @@ The flow needs `/setup-matt-pocock-skills` to have run (tracker = local markdown
 | No `.git` (new project) | Ask the user which they want, then run the setup: **(a) `git init` locally, no remote** (recommended: `/implement` commits and worktrees need git; nothing is pushed anywhere), or **(b) no git at all** (see "No-git mode"). Never add a remote. |
 
 To run the setup, ask first: "Run the setup here with local markdown, default triage labels, and CLAUDE.md?" Only on a yes:
-1. Start the agent with `$FF start _setup setup setup - <IMPLEMENTER>` and prompt it with `/setup-matt-pocock-skills` (it cannot be model-invoked, so send it as the prompt).
+1. Start the agent with `$FF start _setup setup setup - <IMPLEMENTER> --kind <AGENT_KIND>` and prompt it with `/setup-matt-pocock-skills` (Claude Code: it cannot be model-invoked, so send it as the prompt; other kinds: see "Supported agents").
 2. Answer its questions with exactly what the user approved: tracker = Local markdown, default triage labels, CLAUDE.md. Answer menus with `herdr agent send-keys setup <keys>`; zoom the pane (`herdr pane zoom <pane> --on`, `--off` after) to read them, since small panes hide the options. Clear any unsent text in the input box first (`herdr agent send-keys setup ctrl+u`).
 3. Verify on disk that `docs/agents/issue-tracker.md` says "Local Markdown", then `$FF close _setup setup`.
 4. If the user declines the setup, stop.
@@ -56,7 +69,7 @@ Keep these in one unbroken context; do not compact or clear it until tickets are
 3. After `/to-tickets`, add a model line to every ticket file, under `**Status:**`:
 
    ```
-   **Model:** <IMPLEMENTER or MECHANICAL value, e.g. sonnet>
+   **Model:** <IMPLEMENTER or MECHANICAL value: a tier, e.g. mechanical, or a model id>
    ```
 
    - Mechanical: explicit, test-checkable criteria (add a field, wire an endpoint, follow an existing pattern, rename or move).
@@ -65,27 +78,27 @@ Keep these in one unbroken context; do not compact or clear it until tickets are
 
 ## Agent bookkeeping
 
-Every agent you start or close goes through `$FF`, never raw `herdr agent start` or `pane close`; an agent started any other way is missing from the usage summary. It does the layout, ledger, session ids and `/cost` capture in code.
+Every agent you start or close goes through `$FF`, never raw `herdr agent start` or `pane close`; an agent started any other way is missing from the usage summary. It does the layout, ledger, session ids and (Claude Code only) `/cost` capture in code.
 
 | When | Command |
 |---|---|
 | Start of Phase 1 | `$FF orch <feature>` (adds your own ledger row) |
-| Start any agent | `$FF start <feature> <name> <role> <ticket> <model> [--cwd <worktree>]` → prints the pane id |
-| Agent finished | `$FF close <feature> <name>` (captures session id and `/cost`, then closes its pane or tab) |
+| Start any agent | `$FF start <feature> <name> <role> <ticket> <model> [--kind <kind>] [--cwd <worktree>]` → prints the pane id |
+| Agent finished | `$FF close <feature> <name>` (captures session id and, for `claude`, `/cost`; then closes its pane or tab) |
 
-- `role`: `impl`, `diag`, `research`, `proto`, `review`, or `setup`. `ticket`: `NN-slug`, or `-`. `model`: an alias or a full model id.
+- `role`: `impl`, `diag`, `research`, `proto`, `review`, or `setup`. `ticket`: `NN-slug`, or `-`. `model`: a tier or a model id. `kind`: default `claude`.
 - If `start` exits non-zero (for example `agent_not_ready` at a trust dialog), the row and pane are still recorded. Inspect with `herdr agent get <name>` and `herdr agent read <name>`, notify the user, and `close` it later as usual.
 - Reruns and escalations are new agents with new names (`impl-03b`).
 - `close` refuses names it did not start, so it cannot close the user's panes.
 - Files in `.scratch/<feature>/`: `usage.tsv` (ledger), `cost.tsv`, `panes.tsv` (panes `ff.py` opened). Do not edit them by hand.
-- Your own cost: at Finish, run `/cost` yourself and append `orchestrator<TAB><figure>` to `cost.tsv`, or `n/a`. Never estimate.
+- Your own cost (Claude Code only; other kinds write `n/a`): at Finish, run `/cost` yourself and append `orchestrator<TAB><figure>` to `cost.tsv`, or `n/a`. Never estimate.
 
 ## Layout
 
 `$FF start` keeps you in the left half, never split: the first worker splits right of you, later ones split down from the last worker, and from the 4th on each worker gets its own tab. All with `--no-focus`.
 - Start `review` last so it lands in the bottom slot (or its own tab); the user answers in it.
 - `$FF close` each agent as soon as it finishes.
-- If the user asks for a different arrangement, split panes by hand and start agents with raw `herdr agent start`, but then write the ledger row yourself (`name<TAB>role<TAB>ticket<TAB>model<TAB>session_id` into `usage.tsv`, session id from `herdr agent get <name>` → `.result.agent.agent_session.value`, read before the pane closes).
+- If the user asks for a different arrangement, split panes by hand and start agents with raw `herdr agent start`, but then write the ledger row yourself (`name<TAB>role<TAB>ticket<TAB>model<TAB>session_id<TAB>kind` into `usage.tsv`, session id from `herdr agent get <name>` → `.result.agent.agent_session.value`, read before the pane closes).
 
 ## Phase 2 — Dispatch (the frontier loop)
 
@@ -94,8 +107,8 @@ Work the **frontier**: tickets whose blockers are all done and whose `Status` is
 For each frontier ticket `NN-slug`:
 
 1. If more than one ticket runs in parallel, give each its own worktree (`/implement` commits to the current branch): `herdr worktree create --branch <feature>-NN --path <dir> --no-focus`, then `--cwd <dir>` on `$FF start`. Serial tickets may share the checkout.
-2. Start the agent, model from the ticket: `$FF start <feature> impl-NN impl NN-slug <model>`. It opens the pane per "Layout".
-3. Prompt it, one ticket per fresh agent, never reuse an agent across tickets:
+2. Start the agent, model from the ticket: `$FF start <feature> impl-NN impl NN-slug <model> --kind <AGENT_KIND>`. It opens the pane per "Layout".
+3. Prompt it, one ticket per fresh agent, never reuse an agent across tickets (prompt form per kind: "Supported agents"):
    `herdr agent prompt impl-NN "/implement .scratch/<feature>/issues/NN-slug.md" --wait --timeout 600000`
    The 10-minute timeout is the stuck-check interval, not a failure.
 4. Handle the settled state:
@@ -134,7 +147,7 @@ Read blocked/failed state from `herdr agent get`, not from the pane layout. IDs 
 
 ## Other agents (on demand)
 
-Start each with `$FF start <feature> <name> <role> - <IMPLEMENTER>`, prompt with `--wait`, `$FF close` when done.
+Start each with `$FF start <feature> <name> <role> - <IMPLEMENTER> --kind <AGENT_KIND>`, prompt with `--wait`, `$FF close` when done.
 
 | Agent | When | Prompt |
 |---|---|---|
@@ -147,7 +160,7 @@ Start each with `$FF start <feature> <name> <role> - <IMPLEMENTER>`, prompt with
 
 When every ticket is done: run the full test suite once, summarize per ticket (model used, escalations, commit), and list uncommitted or unmerged work. Do not push or open a PR/MR unless the user asks.
 
-Then ask: "Want a usage summary for this session's agents?" Only on a yes, run `python3 $SKILL_DIR/scripts/usage.py .scratch/<feature>/usage.tsv .scratch/<feature>/cost.tsv` and show its table, plus: agent count per role, escalations (reruns of a ticket), and the heaviest agent by output tokens. The cost column comes from each agent's `/cost` output; show `n/a` where missing and never compute a price yourself. Limits: it reads each agent's own Claude Code transcript (no internal sub-agents), and the orchestrator row covers only the session so far.
+Then ask: "Want a usage summary for this session's agents?" Only on a yes, run `python3 $SKILL_DIR/scripts/usage.py .scratch/<feature>/usage.tsv .scratch/<feature>/cost.tsv` and show its table, plus: agent count per role, escalations (reruns of a ticket), and the heaviest agent by output tokens. The cost column comes from each agent's `/cost` output; show `n/a` where missing and never compute a price yourself. Limits: it reads each agent's own Claude Code transcript (no internal sub-agents), so non-`claude` rows show `n/a`, and the orchestrator row covers only the session so far.
 
 ## Rules
 

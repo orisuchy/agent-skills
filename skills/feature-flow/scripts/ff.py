@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """Agent bookkeeping for feature-flow, so the orchestrator cannot forget a step.
 
-  ff.py start <feature> <name> <role> <ticket> <model> [--cwd DIR]
-      Opens a worker pane per the skill's Layout, starts a Claude agent, writes its
-      ledger row (usage.tsv) with the session id. Prints the agent's pane id.
+  ff.py start <feature> <name> <role> <ticket> <model> [--kind KIND] [--cwd DIR]
+      Opens a worker pane per the skill's Layout, starts the agent (KIND = any
+      `herdr agent start --kind`, default claude), writes its ledger row (usage.tsv)
+      with the session id. <model> is a tier (planner/implementer/mechanical) or a
+      model id. Prints the agent's pane id.
   ff.py close <feature> <name>
-      Captures /cost into cost.tsv, fills a missing session id, closes the pane/tab
-      this script opened. Never touches panes it did not open.
+      Captures /cost into cost.tsv (claude only, else n/a), fills a missing session
+      id, closes the pane/tab this script opened. Never touches panes it did not open.
   ff.py orch <feature>
       Adds the orchestrator's own ledger row (agent whose pane is $HERDR_PANE_ID).
 
 State lives in .scratch/<feature>/ under the current directory:
-  usage.tsv  name, role, ticket, model, session_id   (read by usage.py)
+  usage.tsv  name, role, ticket, model, session_id, kind   (read by usage.py)
   cost.tsv   name, cost as printed by /cost, or n/a
   panes.tsv  name, pane_id, tab_id ('-' = pane in the right-hand worker column)
 Set HERDR_BIN to point at a different herdr binary (used by the self-check).
@@ -19,7 +21,13 @@ Set HERDR_BIN to point at a different herdr binary (used by the self-check).
 import json, os, re, subprocess, sys
 
 HERDR = os.environ.get("HERDR_BIN", "herdr")
-MODELS = {"sonnet": "claude-sonnet-5-5", "haiku": "claude-haiku-5-5", "opus": "claude-opus-5-5"}
+# Tier -> model id per agent kind. A kind without an entry uses the agent's own default.
+# Aliases opus/sonnet/haiku stay for old ticket lines. Edit when new versions ship.
+_CLAUDE = {"opus": "claude-opus-5-5", "sonnet": "claude-sonnet-5-5", "haiku": "claude-haiku-5-5"}
+TIERS = {"claude": {**_CLAUDE, "planner": _CLAUDE["opus"], "implementer": _CLAUDE["sonnet"],
+                    "mechanical": _CLAUDE["haiku"]}}
+ROLES = ("planner", "implementer", "mechanical")
+MODEL_FLAG = {"claude", "codex", "gemini", "copilot"}  # --model checked in each CLI's help/docs
 MAX_COLUMN = 3  # worker panes visible in the right column; more go to their own tab
 
 
@@ -57,7 +65,18 @@ def session_id(name):
         return "-"
 
 
-def start(d, name, role, ticket, model, cwd):
+def model_args(kind, model):
+    """Extra agent args for `herdr agent start`: [] means use the agent's default model."""
+    m = TIERS.get(kind, {}).get(model) or (None if model in ROLES else model)
+    if not m:
+        return []
+    if kind not in MODEL_FLAG:
+        print(f"note: {kind} --model flag not verified; starting with its default model, not {m}", file=sys.stderr)
+        return []
+    return ["--", "--model", m]
+
+
+def start(d, name, role, ticket, model, cwd, kind="claude"):
     panes = os.path.join(d, "panes.tsv")
     column = [r for r in rows(panes) if r[2] == "-"]
     tab = "-"
@@ -71,10 +90,9 @@ def start(d, name, role, ticket, model, cwd):
         pane = out["result"]["pane"]["pane_id"]
     append(panes, name, pane, tab)  # record before start, so close can clean up a failed start
 
-    rc, out = herdr("agent", "start", name, "--kind", "claude", "--pane", pane,
-                    "--", "--model", MODELS.get(model, model), check=False)
+    rc, out = herdr("agent", "start", name, "--kind", kind, "--pane", pane, *model_args(kind, model), check=False)
     # Write the ledger row even when start reports agent_not_ready: the agent exists and spends tokens.
-    append(os.path.join(d, "usage.tsv"), name, role, ticket, model, session_id(name))
+    append(os.path.join(d, "usage.tsv"), name, role, ticket, model, session_id(name), kind)
     print(pane)
     if rc != 0:
         sys.exit(f"agent start {name} returned an error (row recorded, pane {pane} kept): {json.dumps(out)}")
@@ -90,17 +108,17 @@ def close(d, name):
     # Session id disappears with the pane: fill it now if start could not read it.
     usage = os.path.join(d, "usage.tsv")
     ledger = rows(usage)
-    sid = "-"
+    sid, kind = "-", "claude"
     for r in reversed(ledger):
         if r[0] == name:
             if r[4] == "-":
                 r[4] = session_id(name)
-            sid = r[4]
+            sid, kind = r[4], (r[5] if len(r) > 5 else "claude")  # old 5-column rows are claude
             break
     write_rows(usage, ledger)
 
-    cost = "n/a"
-    rc, _ = herdr("agent", "prompt", name, "/cost", "--wait", "--timeout", "60000", check=False)
+    cost = "n/a"  # /cost is a Claude Code command; other kinds have no equivalent here
+    rc, _ = herdr("agent", "prompt", name, "/cost", "--wait", "--timeout", "60000", check=False) if kind == "claude" else (1, None)
     if rc == 0:
         _, out = herdr("agent", "read", name, "--source", "recent-unwrapped", "--lines", "20", check=False)
         text = json.dumps(out)  # the read text sits somewhere under .result; search all of it
@@ -124,7 +142,7 @@ def orch(d):
     agents = out.get("result", {}).get("agents", [])
     a = next((a for a in agents if a.get("pane_id") == me), None)
     sid = (a or {}).get("agent_session", {}).get("value") or "-"
-    append(os.path.join(d, "usage.tsv"), "orchestrator", "orch", "-", "opus", sid)
+    append(os.path.join(d, "usage.tsv"), "orchestrator", "orch", "-", "planner", sid, (a or {}).get("agent") or "claude")
     print(sid)
 
 
@@ -132,15 +150,16 @@ def main(argv):
     if len(argv) < 2 or argv[0] not in ("start", "close", "orch"):
         sys.exit(__doc__)
     cmd, feature, rest = argv[0], argv[1], argv[2:]
-    cwd = os.getcwd()
-    if "--cwd" in rest:
-        i = rest.index("--cwd")
-        cwd = rest[i + 1]
-        rest = rest[:i] + rest[i + 2:]
+    opts = {"--cwd": os.getcwd(), "--kind": "claude"}
+    for flag in opts:
+        if flag in rest:
+            i = rest.index(flag)
+            opts[flag] = rest[i + 1]
+            rest = rest[:i] + rest[i + 2:]
     d = os.path.join(".scratch", feature)
     os.makedirs(d, exist_ok=True)
     if cmd == "start" and len(rest) == 4:
-        start(d, *rest, cwd)
+        start(d, *rest, opts["--cwd"], opts["--kind"])
     elif cmd == "close" and len(rest) == 1:
         close(d, rest[0])
     elif cmd == "orch" and not rest:
