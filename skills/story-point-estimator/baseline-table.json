@@ -1,0 +1,20 @@
+[
+  {
+    "key": "PROJ-101",
+    "points": 1,
+    "summary": "Add a `currency` field to the Invoice DTO (example entry)",
+    "notes": "Amount of Work: tiny \u2014 one field plus one mapper line. Familiarity: high \u2014 mirrors the neighbouring fields. Risk: very low \u2014 fully specified. Testing: light \u2014 extend one existing test. Dependencies: none."
+  },
+  {
+    "key": "PROJ-102",
+    "points": 3,
+    "summary": "Replace the deprecated date helper across 4 modules (example entry)",
+    "notes": "Amount of Work: medium \u2014 touches 4 modules, mostly mechanical replacement. Familiarity: medium-high \u2014 the replacement API already exists. Risk: medium \u2014 timezone handling differs per module. Testing: medium \u2014 fix a handful of existing tests. Dependencies: none."
+  },
+  {
+    "key": "PROJ-103",
+    "points": 5,
+    "summary": "Implement the CSV export handler for the orders table (example entry)",
+    "notes": "Amount of Work: medium-large \u2014 new handler mapping ~20 columns from nested objects. Familiarity: medium \u2014 base-class pattern exists, but the data source is new. Risk: low-medium \u2014 columns and truncation rules are specified. Testing: medium-heavy \u2014 null safety, truncation, row cap. Dependencies: needs the export request DTO from another ticket."
+  }
+]
