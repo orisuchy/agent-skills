@@ -1,0 +1,19 @@
+skills/make-repo-ai-ready/references/ci-jobs.md
+  s_3ad3fd1db97d76::t_931fdf4ad586b8 21,46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8c12a5249763ecdea228cfcd3b79fa05dbeeaafc",
+  "prompts": {},
+  "sessions": {
+    "s_3ad3fd1db97d76": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e99799b3-63b5-4ff7-9beb-3eb779a107c4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ori Suchy <orisuchy@gmail.com>"
+    }
+  }
+}
