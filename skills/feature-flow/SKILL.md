@@ -24,7 +24,7 @@ The planner tier is you (on Claude Code, start the session on `opus`). A model v
 
 ## Supported agents
 
-Pass `--kind <AGENT_KIND>` (or a per-ticket kind the user picked) to every `$FF start`; without it the worker is `claude`. This table is the one place that says how to prompt a skill. Prompts in this file are written in Claude form (`/implement <path>`); for another kind rewrite them per its row.
+Pass `--kind <AGENT_KIND>` (or a per-ticket kind the user picked) to every `$FF start`; without it the worker is `claude`. This table is the one place that says how to prompt a skill. Prompts below name the skill and show the Claude Code form (`/implement <path>`); for another kind use its row.
 
 | Kind | Prompt a skill | Model flag | `/cost` + usage.py |
 |---|---|---|---|
@@ -108,7 +108,7 @@ For each frontier ticket `NN-slug`:
 
 1. If more than one ticket runs in parallel, give each its own worktree (`/implement` commits to the current branch): `herdr worktree create --branch <feature>-NN --path <dir> --no-focus`, then `--cwd <dir>` on `$FF start`. Serial tickets may share the checkout.
 2. Start the agent, model from the ticket: `$FF start <feature> impl-NN impl NN-slug <model> --kind <AGENT_KIND>`. It opens the pane per "Layout".
-3. Prompt it, one ticket per fresh agent, never reuse an agent across tickets (prompt form per kind: "Supported agents"):
+3. Prompt it with the implement skill on the ticket, one ticket per fresh agent, never reuse an agent across tickets (form per kind: "Supported agents"; Claude Code shown):
    `herdr agent prompt impl-NN "/implement .scratch/<feature>/issues/NN-slug.md" --wait --timeout 600000`
    The 10-minute timeout is the stuck-check interval, not a failure.
 4. Handle the settled state:
@@ -116,7 +116,7 @@ For each frontier ticket `NN-slug`:
    - `blocked`: inspect with `herdr agent get`/`herdr agent read`. Do not answer approval or permission dialogs yourself. Notify the user and ask.
    - `agent_prompt_stalled`: the prompt was likely not picked up. Inspect before resending anything.
    - `timeout` (10 minutes): run the stuck check.
-5. **Escalation:** if a mechanical-model ticket fails, or the tests are thin or only assert the happy path, rerun that ticket once on the implementer model in a fresh agent. If that also fails, dispatch `diag`.
+5. **Escalation:** if a mechanical-model ticket fails, or the tests are thin or only assert the happy path, rerun that ticket once on the implementer model in a fresh agent (non-`claude` kinds have no tier defaults: escalate with a literal model id or another kind, or the rerun uses the same model). If that also fails, dispatch `diag`.
 
 ### Questions
 
@@ -160,7 +160,7 @@ Start each with `$FF start <feature> <name> <role> - <IMPLEMENTER> --kind <AGENT
 
 When every ticket is done: run the full test suite once, summarize per ticket (model used, escalations, commit), and list uncommitted or unmerged work. Do not push or open a PR/MR unless the user asks.
 
-Then ask: "Want a usage summary for this session's agents?" Only on a yes, run `python3 $SKILL_DIR/scripts/usage.py .scratch/<feature>/usage.tsv .scratch/<feature>/cost.tsv` and show its table, plus: agent count per role, escalations (reruns of a ticket), and the heaviest agent by output tokens. The cost column comes from each agent's `/cost` output; show `n/a` where missing and never compute a price yourself. Limits: it reads each agent's own Claude Code transcript (no internal sub-agents), so non-`claude` rows show `n/a`, and the orchestrator row covers only the session so far.
+Then ask: "Want a usage summary for this session's agents?" Only on a yes, run `python3 $SKILL_DIR/scripts/usage.py .scratch/<feature>/usage.tsv .scratch/<feature>/cost.tsv` and show its table, plus: agent count per role, escalations (reruns of a ticket), and the heaviest agent by output tokens. The cost column comes from each agent's `/cost` output; show `n/a` where missing and never compute a price yourself. Limits: it reads each agent's own Claude Code transcript (no internal sub-agents), so non-`claude` rows show `n/a` and are left out of the totals, and the orchestrator row covers only the session so far.
 
 ## Rules
 

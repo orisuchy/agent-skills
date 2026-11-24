@@ -1,11 +1,11 @@
 # feature-flow
 
-Build a feature with a team of agents inside [Herdr](https://herdr.dev). You plan with one orchestrator agent in your own pane (grill the idea, write a spec, cut it into tickets), then it dispatches one fresh worker agent per ticket into panes beside you, each running the implement skill. Workers can be Claude Code (the default), Codex, Gemini CLI, Copilot CLI or any other agent Herdr can start, mixed in one run. It watches them, answers what the spec already answers, brings you everything else, escalates failing tickets to a stronger model, and keeps a per-agent usage ledger. You stay in one pane and make the decisions.
+Build a feature with a team of agents inside [Herdr](https://herdr.dev). You plan with one orchestrator agent in your own pane (grill the idea, write a spec, cut it into tickets), then it dispatches one fresh worker agent per ticket into panes beside you, each running the implement skill. Workers can be Claude Code (the default), Codex, Gemini CLI, Copilot CLI or any other agent Herdr can start, mixed in one run. It watches them, answers what the spec already answers, brings you everything else, escalates failing tickets to a stronger model (tier defaults exist for Claude Code; other agents need a model id), and keeps a per-agent usage ledger. You stay in one pane and make the decisions.
 
 ## Use cases
 
 - A feature big enough for a spec and 3-10 tickets, and you want each ticket built by a fresh agent with a clean context.
-- Cheap models for mechanical tickets and a stronger one for judgment calls, chosen per ticket and shown to you before anything runs.
+- Cheap models for mechanical tickets and a stronger one for judgment calls, chosen per ticket and shown to you before anything runs (Claude Code by tier; other agents by model id).
 - Several independent tickets built at once, each in its own git worktree (opt-in).
 - A worker is stuck or keeps failing: the orchestrator notices, steers or restarts it, and sends a diagnosis agent.
 - Your PR/MR got review comments: a review agent walks you through them while fix tickets go to new workers.

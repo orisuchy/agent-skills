@@ -16,7 +16,7 @@ elif a[:2] == ["agent", "start"]:
     out({})
 elif a[:2] == ["agent", "get"]: out({"agent": {"agent_session": {"value": "sid-" + a[2]}}})
 elif a[:2] == ["agent", "read"]: out({"text": "> /cost\n  Total cost: $0.42\n  Total duration: 3m"})
-elif a[:2] == ["agent", "list"]: out({"agents": [{"pane_id": "w1:p1", "agent_session": {"value": "sid-me"}}]})
+elif a[:2] == ["agent", "list"]: out({"agents": [{"agent": "claude", "pane_id": "w1:p1", "agent_session": {"value": "sid-me"}}]})
 else: out({})
 '''
 
@@ -79,6 +79,9 @@ with tempfile.TemporaryDirectory() as tmp:
     run("start", "feat", "a1", "impl", "09-z", "some-model", "--kind", "amp")
     assert "--kind amp" in starts()[-1] and "--model" not in starts()[-1], starts()[-1]  # flag unverified
     assert st("usage.tsv").splitlines()[-1].endswith("\tamp"), st("usage.tsv")
+    run("start", "feat", "c3", "impl", "10-z", "haiku", "--kind", "codex")
+    assert "--model" not in starts()[-1], starts()[-1]                 # old claude alias = tier elsewhere
+    run("start", "feat", "c4", "impl", "11-z", "sonnet", "--kind", ok=False)   # trailing flag: usage, no crash
     n = len(calls())
     out = run("close", "feat", "c1")
     assert "cost=n/a" in out and not any("/cost" in c for c in calls()[n:]), (out, calls()[n:])

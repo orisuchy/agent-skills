@@ -26,7 +26,8 @@ HERDR = os.environ.get("HERDR_BIN", "herdr")
 _CLAUDE = {"opus": "claude-opus-5-5", "sonnet": "claude-sonnet-5-5", "haiku": "claude-haiku-5-5"}
 TIERS = {"claude": {**_CLAUDE, "planner": _CLAUDE["opus"], "implementer": _CLAUDE["sonnet"],
                     "mechanical": _CLAUDE["haiku"]}}
-ROLES = ("planner", "implementer", "mechanical")
+TIER_NAMES = ("planner", "implementer", "mechanical", *_CLAUDE)  # never sent as a literal id
+DEFAULT_KIND = "claude"
 MODEL_FLAG = {"claude", "codex", "gemini", "copilot"}  # --model checked in each CLI's help/docs
 MAX_COLUMN = 3  # worker panes visible in the right column; more go to their own tab
 
@@ -67,7 +68,7 @@ def session_id(name):
 
 def model_args(kind, model):
     """Extra agent args for `herdr agent start`: [] means use the agent's default model."""
-    m = TIERS.get(kind, {}).get(model) or (None if model in ROLES else model)
+    m = TIERS.get(kind, {}).get(model) or (None if model in TIER_NAMES else model)
     if not m:
         return []
     if kind not in MODEL_FLAG:
@@ -76,7 +77,7 @@ def model_args(kind, model):
     return ["--", "--model", m]
 
 
-def start(d, name, role, ticket, model, cwd, kind="claude"):
+def start(d, name, role, ticket, model, cwd, kind):
     panes = os.path.join(d, "panes.tsv")
     column = [r for r in rows(panes) if r[2] == "-"]
     tab = "-"
@@ -108,22 +109,23 @@ def close(d, name):
     # Session id disappears with the pane: fill it now if start could not read it.
     usage = os.path.join(d, "usage.tsv")
     ledger = rows(usage)
-    sid, kind = "-", "claude"
+    sid, kind = "-", DEFAULT_KIND
     for r in reversed(ledger):
         if r[0] == name:
             if r[4] == "-":
                 r[4] = session_id(name)
-            sid, kind = r[4], (r[5] if len(r) > 5 else "claude")  # old 5-column rows are claude
+            sid, kind = r[4], (r[5] if len(r) > 5 else DEFAULT_KIND)  # old 5-column rows
             break
     write_rows(usage, ledger)
 
     cost = "n/a"  # /cost is a Claude Code command; other kinds have no equivalent here
-    rc, _ = herdr("agent", "prompt", name, "/cost", "--wait", "--timeout", "60000", check=False) if kind == "claude" else (1, None)
-    if rc == 0:
-        _, out = herdr("agent", "read", name, "--source", "recent-unwrapped", "--lines", "20", check=False)
-        text = json.dumps(out)  # the read text sits somewhere under .result; search all of it
-        hits = re.findall(r"Total cost:\s*(\$[\d.,]+)", text)
-        cost = hits[-1] if hits else "n/a"  # never estimate
+    if kind == "claude":
+        rc, _ = herdr("agent", "prompt", name, "/cost", "--wait", "--timeout", "60000", check=False)
+        if rc == 0:
+            _, out = herdr("agent", "read", name, "--source", "recent-unwrapped", "--lines", "20", check=False)
+            text = json.dumps(out)  # the read text sits somewhere under .result; search all of it
+            hits = re.findall(r"Total cost:\s*(\$[\d.,]+)", text)
+            cost = hits[-1] if hits else "n/a"  # never estimate
     append(os.path.join(d, "cost.tsv"), name, cost)
 
     if tab == "-":
@@ -142,7 +144,7 @@ def orch(d):
     agents = out.get("result", {}).get("agents", [])
     a = next((a for a in agents if a.get("pane_id") == me), None)
     sid = (a or {}).get("agent_session", {}).get("value") or "-"
-    append(os.path.join(d, "usage.tsv"), "orchestrator", "orch", "-", "planner", sid, (a or {}).get("agent") or "claude")
+    append(os.path.join(d, "usage.tsv"), "orchestrator", "orch", "-", "planner", sid, (a or {}).get("agent") or DEFAULT_KIND)
     print(sid)
 
 
@@ -150,10 +152,12 @@ def main(argv):
     if len(argv) < 2 or argv[0] not in ("start", "close", "orch"):
         sys.exit(__doc__)
     cmd, feature, rest = argv[0], argv[1], argv[2:]
-    opts = {"--cwd": os.getcwd(), "--kind": "claude"}
+    opts = {"--cwd": os.getcwd(), "--kind": DEFAULT_KIND}
     for flag in opts:
         if flag in rest:
             i = rest.index(flag)
+            if i + 1 >= len(rest):
+                sys.exit(__doc__)
             opts[flag] = rest[i + 1]
             rest = rest[:i] + rest[i + 2:]
     d = os.path.join(".scratch", feature)
