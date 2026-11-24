@@ -1,0 +1,23 @@
+skills/commit-plan/SKILL.md
+  s_5f96d783a48053::t_9d4f852200bfe1 20-22,33,36,40-41,73-76,94,98-100,102
+skills/commit-plan/scripts/scan-changes.sh
+  s_5f96d783a48053::t_92ceb78d92a245 9-13
+skills/commit-plan/README.md
+  s_5f96d783a48053::t_e329d8e77d156a 21-25,31-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0c61a39c6cabea4399fe3727c183be6e2621b6db",
+  "prompts": {},
+  "sessions": {
+    "s_5f96d783a48053": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "525ce074-bd46-49ce-a9a1-3b4a7d5bc273",
+        "model": "claude-haiku-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
