@@ -1,0 +1,22 @@
+skills/feature-flow/README.md
+  s_1cc408eaf936ba::t_8cceb73ff9f1c2 95,97-101,103
+skills/feature-flow/SKILL.md
+  s_1cc408eaf936ba::t_00a4045e366e1b 85
+  s_1cc408eaf936ba::t_dc88cd72d6efc2 19-20,22,35,59,135,137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4a69f004eb8ca109daa5b06bba1dcc07c651f7a8",
+  "prompts": {},
+  "sessions": {
+    "s_1cc408eaf936ba": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "745eccbd-19ce-4cfb-aeda-7d9047c78e9c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
