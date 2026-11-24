@@ -1,0 +1,41 @@
+skills/task-overview/README.md
+  s_51305237028b00::t_6698675456141f 1-38
+skills/task-overview/references/output_template.md
+  s_51305237028b00::t_0c760db30b4bb8 20
+  s_51305237028b00::t_78b59af191385e 17-19
+  s_51305237028b00::t_935b29d5bd731c 21-23
+  s_51305237028b00::t_81bd4caae4b153 1-16,24-82
+skills/task-overview/SKILL.md
+  s_51305237028b00::t_c4b721af6508b6 8-16
+  s_51305237028b00::t_1c46401618c0a8 36
+  s_51305237028b00::t_1ef34af299eaf6 3
+  s_51305237028b00::t_703954581bfb85 42
+  s_51305237028b00::t_1a6cf7caf5f6e4 91
+  s_51305237028b00::t_b2b069f4014583 26
+  s_51305237028b00::t_43e05157773b17 62
+  s_51305237028b00::t_95d865937a02c7 1-2
+  s_51305237028b00::t_9f4f198d65b0ce 4-7
+  s_51305237028b00::t_468acf3f4dfbe6 17-19,23-25
+  s_51305237028b00::t_4510a6a240ef34 27-29,33-35
+  s_51305237028b00::t_6e7d549140fbd0 37-41
+  s_51305237028b00::t_859249badcb9e3 43-45,59-61
+  s_51305237028b00::t_24d4cd5d0240dc 63-65,88-90
+  s_51305237028b00::t_e5cb9ef7f6d0b8 92-94
+  s_51305237028b00::t_e2f332617b4a60 20-22,30-32,46-58,66-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b1614ca7f3d890c5bb698f8b05d988a0490231aa",
+  "prompts": {},
+  "sessions": {
+    "s_51305237028b00": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4067e3a6-6652-48b4-93b1-01bd63e4b138",
+        "model": "claude-haiku-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
