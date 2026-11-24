@@ -1,0 +1,19 @@
+skills/feature-flow/README.md
+  s_1cc408eaf936ba::t_46fadb68fed566 26-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "040c4feb4f9da7df8bab1d73f360f9f27b53ec50",
+  "prompts": {},
+  "sessions": {
+    "s_1cc408eaf936ba": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "745eccbd-19ce-4cfb-aeda-7d9047c78e9c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "ori.suchy <ori.suchy@coro.net>"
+    }
+  }
+}
