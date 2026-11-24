@@ -1,0 +1,14 @@
+LICENSE
+  h_0890608decf2a3 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4afc586eaaf5e7636d9c6c28839e0e444312ed1d",
+  "prompts": {},
+  "humans": {
+    "h_0890608decf2a3": {
+      "author": "Ori Suchy <orisuchy@gmail.com>"
+    }
+  }
+}
