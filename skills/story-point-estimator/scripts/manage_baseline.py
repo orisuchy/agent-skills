@@ -95,7 +95,7 @@ def main():
 
     p_add = sub.add_parser("add", help="Add a new baseline entry")
     p_add.add_argument("--key", required=True, help="Ticket key, e.g. PROJ-1234")
-    p_add.add_argument("--points", required=True, type=int, help="Fibonacci point value")
+    p_add.add_argument("--points", required=True, type=int, help="Point value (must be in POINT_SCALE)")
     p_add.add_argument("--summary", required=True, help="Short ticket summary")
     p_add.add_argument("--notes", default="", help="Why it earned this score (reference the 5 dimensions)")
     p_add.set_defaults(func=cmd_add)
